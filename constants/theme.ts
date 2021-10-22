@@ -2,6 +2,7 @@ const colors = {
   primary: "#fca311",
   lightPrimary: '#fcbf49',
   darkPrimary: '#f77f00',
+  disabledPrimary: '#fca31122',
   purple: "#7209b7",
   tertiary: "#FFE358",
   black: "#323643",
