@@ -10,39 +10,69 @@ import { CardValues } from "../models/CardValues";
 
 function Home() {
   const [cardValues, setCardValues] = useState<CardValues[]>([]);
+  const [isExecutionPaused, setIsExecutionPaused] = useState<boolean>(false);
+
+
   useLayoutEffect(() => {
-    const shuffledStrings = shuffleArray([...mockCardValues, ...mockCardValues])
+    let shuffledStrings = shuffleArray([...mockCardValues, ...mockCardValues])
+    shuffledStrings = [...shuffledStrings, 'J', 'J']
     const mockCardObject: CardValues[] = shuffledStrings.map((value, index) => ({
       id: index,
       value: value,
-      isVisible: true,
+      isVisible: false,
       isFound: false,
     }))
     setCardValues(mockCardObject);
   }, [])
 
-  const onCardPress = (item: CardValues) => {
-    console.log(item)
+  const checkForMatchingCards = () => {
+    const openCardsValues = cardValues.filter((currentVal) => currentVal.isVisible);
+    if (openCardsValues.length === 2) {
+      if (openCardsValues[0].value === openCardsValues[1].value) {
+        cardValues[openCardsValues[0].id].isFound = true;
+        cardValues[openCardsValues[1].id].isFound = true;
+      }
+      setIsExecutionPaused(true);
+      setTimeout(() => {
+        cardValues[openCardsValues[0].id].isVisible = false;
+        cardValues[openCardsValues[1].id].isVisible = false;
+        setCardValues([...cardValues])
+        setIsExecutionPaused(false);
+      }, 1000);
+    }
+  }
+
+  const onCardPress = (item: CardValues, index: number) => {
+    if (!isExecutionPaused && !item.isFound) {
+      cardValues[index].isVisible = true;
+      setCardValues([...cardValues]);
+      checkForMatchingCards();
+    }
   }
 
   const RenderCards = ({item, index}: {item: CardValues, index: number}) => (
-    <TouchableOpacity onPress={() => onCardPress(item)} style={styles.card}>
-      {item.isVisible && <AppText style={styles.cardText}>
-        {item.value}
-      </AppText>}
+    <TouchableOpacity 
+      onPress={() => onCardPress(item, index)} 
+      style={item.isFound ? [styles.card, styles.completedCards] : [styles.card]}
+    >
+      {item.isVisible && (
+        <AppText>
+          {item.value}
+        </AppText>
+      )}
     </TouchableOpacity>
   );
 
   return (
     <AppScreen style={styles.container}>
       <View>
-      <FlatList
-        data={cardValues}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={RenderCards}
-        showsVerticalScrollIndicator={false}
-        numColumns={4}
-      />
+        <FlatList
+          data={cardValues}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={RenderCards}
+          showsVerticalScrollIndicator={false}
+          numColumns={4}
+        />
       </View>
     </AppScreen>
   )
@@ -61,7 +91,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  cardText: {
+  completedCards: {
+    backgroundColor: colors.primary
   }
 });
 export default Home;
