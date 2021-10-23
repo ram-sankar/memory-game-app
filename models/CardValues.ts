@@ -4,3 +4,9 @@ export interface CardValues{
   isVisible: boolean,
   isFound: boolean
 }
+
+export type LEVELS = {
+  BEGINNER: 'BEGINNER',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
+}

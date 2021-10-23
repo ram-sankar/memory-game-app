@@ -1,20 +1,32 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity, Button } from "react-native";
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { shuffleArray } from "../common/functions";
 
 import AppScreen from "../components/AppScreen";
 import AppText from "../components/AppText";
 import { cardValues as mockCardValues } from "../constants/mock";
 import { colors, sizes } from "../constants/theme";
-import { CardValues } from "../models/CardValues";
+import { CardValues, LEVELS } from "../models/CardValues";
+import Completed from "./Completed";
+import StartGame from "./StartGame";
 
 function Home() {
+  const [isLevelSelectionModelOpen, setIsLevelSelectionModelOpen] = useState<boolean>(false);
   const [cardValues, setCardValues] = useState<CardValues[]>([]);
   const [isExecutionPaused, setIsExecutionPaused] = useState<boolean>(false);
+  const [letterCount, setLetterCount] = useState<number>(2);
   const [noOfTurns, setNoOfTurns] = useState<number>(0);
   const [bestScore, setBestScore] = useState<number>(0);
+  const [pairCount, setPairCount] = useState<number>(0);
   const [isAllMatchFound, setIsAllMatchFound] = useState<boolean>(false);
   
+  const onLevelSelect = (selectedLevel: LEVELS) => {
+    setIsLevelSelectionModelOpen(false);
+    if (selectedLevel.BEGINNER) {
+      setLetterCount(2);
+    }
+  }
+
   const onResetPress = () => {
     let shuffledStrings = shuffleArray([...mockCardValues, ...mockCardValues])
     shuffledStrings = [...shuffledStrings, 'J', 'J']
@@ -27,6 +39,7 @@ function Home() {
     setCardValues(mockCardObject);
     setIsAllMatchFound(false);
     setNoOfTurns(0);
+    setPairCount(0);
   }
 
   useLayoutEffect(() => {
@@ -36,6 +49,7 @@ function Home() {
 
   const checkIfAllMatchesAreFound = () => {
     const matchedCards = cardValues.filter((currentVal) => currentVal.isFound);
+    setPairCount(matchedCards.length/2)
     if (matchedCards.length === cardValues.length) {
       setIsAllMatchFound(true);
       if (noOfTurns < bestScore || bestScore === 0) {
@@ -87,6 +101,9 @@ function Home() {
         Best: {bestScore}
       </AppText>
       <AppText style={styles.scoreCardText}>
+        Pairs Found: {pairCount}
+      </AppText>
+      <AppText style={styles.scoreCardText}>
         Turns: {noOfTurns}
       </AppText>
     </View>
@@ -107,6 +124,8 @@ function Home() {
 
   return (
     <AppScreen style={styles.container}>
+      {isLevelSelectionModelOpen && <StartGame onLevelSelect={onLevelSelect} />}
+      {isAllMatchFound && <Completed onResetPress={onResetPress} noOfTurns={noOfTurns} bestScore={bestScore} />}
       <ScoreCard />
       <FlatList
         data={cardValues}
@@ -143,10 +162,13 @@ const styles = StyleSheet.create({
     width: '20%',
     height: 100,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderRadius: sizes.radius
   },
   cardText: {
-    color: colors.white
+    color: colors.white,
+    fontWeight: '700',
+    fontSize: sizes.h1
   },
   completedCards: {
     backgroundColor: colors.disabledPrimary
