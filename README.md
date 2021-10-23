@@ -10,8 +10,6 @@ https://expo.dev/artifacts/c8943568-785d-4d93-9676-e181a2cecdbc
 ## Screen Shots
 
 ### Start Game
-User can choose one of the level
-
 <img width="200" alt="start" src="https://user-images.githubusercontent.com/26500550/138565745-3408c38a-d0e8-4425-bbc8-ac1f927a6a98.jpg">
 
 ### Medium Level
