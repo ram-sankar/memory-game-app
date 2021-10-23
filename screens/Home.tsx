@@ -12,6 +12,7 @@ function Home() {
   const [cardValues, setCardValues] = useState<CardValues[]>([]);
   const [isExecutionPaused, setIsExecutionPaused] = useState<boolean>(false);
   const [noOfTurns, setNoOfTurns] = useState<number>(0);
+  const [bestScore, setBestScore] = useState<number>(0);
   const [isAllMatchFound, setIsAllMatchFound] = useState<boolean>(false);
   
   const onResetPress = () => {
@@ -29,6 +30,7 @@ function Home() {
   }
 
   useLayoutEffect(() => {
+    setBestScore(0);
     onResetPress();
   }, []);
 
@@ -36,6 +38,9 @@ function Home() {
     const matchedCards = cardValues.filter((currentVal) => currentVal.isFound);
     if (matchedCards.length === cardValues.length) {
       setIsAllMatchFound(true);
+      if (noOfTurns < bestScore || bestScore === 0) {
+        setBestScore(noOfTurns+1)
+      }
     }
   }
 
@@ -77,9 +82,14 @@ function Home() {
   }
 
   const ScoreCard = () => (
-    <AppText>
-      Turns: {noOfTurns}
-    </AppText>
+    <View style={styles.scoreCard}>
+      <AppText style={styles.scoreCardText}>
+        Best: {bestScore}
+      </AppText>
+      <AppText style={styles.scoreCardText}>
+        Turns: {noOfTurns}
+      </AppText>
+    </View>
   )
 
   const RenderCards = ({item, index}: {item: CardValues, index: number}) => (
@@ -114,7 +124,17 @@ function Home() {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  scoreCard: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: '100%',
+    padding: sizes.padding
+  },
+  scoreCardText: {
+    fontWeight: '700',
+    fontSize: sizes.title
   },
   card: {
     backgroundColor: colors.primary,

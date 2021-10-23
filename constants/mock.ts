@@ -1,4 +1,4 @@
-const cardValues = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+const cardValues = ['H'];
 
 export {
   cardValues
