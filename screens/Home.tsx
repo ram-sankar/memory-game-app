@@ -5,31 +5,37 @@ import { shuffleArray } from "../common/functions";
 import AppScreen from "../components/AppScreen";
 import AppText from "../components/AppText";
 import { cardValues as mockCardValues } from "../constants/mock";
+import { LEVELS } from "../constants/strings";
 import { colors, sizes } from "../constants/theme";
-import { CardValues, LEVELS } from "../models/CardValues";
+import { CardValues } from "../models/CardValues";
 import Completed from "./Completed";
 import StartGame from "./StartGame";
 
 function Home() {
-  const [isLevelSelectionModelOpen, setIsLevelSelectionModelOpen] = useState<boolean>(false);
+  const [isLevelSelectionModelOpen, setIsLevelSelectionModelOpen] = useState<boolean>(true);
   const [cardValues, setCardValues] = useState<CardValues[]>([]);
   const [isExecutionPaused, setIsExecutionPaused] = useState<boolean>(false);
   const [letterCount, setLetterCount] = useState<number>(2);
   const [noOfTurns, setNoOfTurns] = useState<number>(0);
   const [bestScore, setBestScore] = useState<number>(0);
   const [pairCount, setPairCount] = useState<number>(0);
+  const [shouldRefreshGrid, setShouldRefreshGrid] = useState<boolean>(false);
   const [isAllMatchFound, setIsAllMatchFound] = useState<boolean>(false);
   
-  const onLevelSelect = (selectedLevel: LEVELS) => {
-    setIsLevelSelectionModelOpen(false);
-    if (selectedLevel.BEGINNER) {
+  const onLevelSelect = (selectedLevel: string) => {
+    if (selectedLevel === LEVELS.BEGINNER) {
       setLetterCount(2);
+    } else if (selectedLevel === LEVELS.MEDIUM) {
+      setLetterCount(8);
+    } else if (selectedLevel === LEVELS.HARD) {
+      setLetterCount(16);
     }
+    setShouldRefreshGrid(!shouldRefreshGrid)
+    setIsLevelSelectionModelOpen(false);
   }
 
-  const onResetPress = () => {
-    let shuffledStrings = shuffleArray([...mockCardValues, ...mockCardValues])
-    shuffledStrings = [...shuffledStrings, 'J', 'J']
+  const resetData = () => {
+    const shuffledStrings = shuffleArray([...mockCardValues.slice(0, letterCount), ...mockCardValues.slice(0, letterCount)])
     const mockCardObject: CardValues[] = shuffledStrings.map((value, index) => ({
       id: index,
       value: value,
@@ -42,9 +48,13 @@ function Home() {
     setPairCount(0);
   }
 
+  useEffect(() => {
+    resetData();
+  }, [shouldRefreshGrid])
+
   useLayoutEffect(() => {
     setBestScore(0);
-    onResetPress();
+    setIsLevelSelectionModelOpen(true);
   }, []);
 
   const checkIfAllMatchesAreFound = () => {
@@ -125,7 +135,7 @@ function Home() {
   return (
     <AppScreen style={styles.container}>
       {isLevelSelectionModelOpen && <StartGame onLevelSelect={onLevelSelect} />}
-      {isAllMatchFound && <Completed onResetPress={onResetPress} noOfTurns={noOfTurns} bestScore={bestScore} />}
+      {isAllMatchFound && <Completed resetData={resetData} noOfTurns={noOfTurns} bestScore={bestScore} />}
       <ScoreCard />
       <FlatList
         data={cardValues}
@@ -134,7 +144,7 @@ function Home() {
         showsVerticalScrollIndicator={false}
         numColumns={4}
       />
-      <TouchableOpacity onPress={onResetPress} style={styles.resetButton}>
+      <TouchableOpacity onPress={()=>setIsLevelSelectionModelOpen(true)} style={styles.resetButton}>
         <AppText style={styles.resetText}>Reset</AppText>
       </TouchableOpacity>
     </AppScreen>
@@ -180,6 +190,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.red,
     paddingHorizontal: 20,
     paddingVertical: 10,
+    marginTop: 10,
     borderRadius: sizes.radius
   },
   resetText: {

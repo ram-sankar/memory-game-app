@@ -5,7 +5,7 @@ import AppText from "../components/AppText";
 import { colors, sizes } from "../constants/theme";
 import AppModal from './../components/AppModel';
 
-function Completed({onResetPress, noOfTurns, bestScore}: Props) {
+function Completed({resetData, noOfTurns, bestScore}: Props) {
 
   return(
     <AppModal isModalVisible={true} onRequestClose height={150} width={300}>
@@ -14,7 +14,7 @@ function Completed({onResetPress, noOfTurns, bestScore}: Props) {
       <AppText style={styles.scores}>Best Score: {bestScore}</AppText>
       <Pressable
         style={[styles.button]}
-        onPress={() => onResetPress()}
+        onPress={() => resetData()}
       >
         <AppText style={styles.buttonText}>RESTART</AppText>
       </Pressable>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 });
 
 interface Props {
-  onResetPress: Function,
+  resetData: Function,
   noOfTurns: number,
   bestScore: number
 }

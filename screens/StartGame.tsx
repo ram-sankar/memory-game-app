@@ -11,7 +11,8 @@ function StartGame({onLevelSelect}: Props) {
   return(
     <AppModal isModalVisible={true} onRequestClose height={150} width={300}>
       <AppText style={styles.modalText}>Memory Game</AppText>
-      <View>
+      <AppText>Select Level</AppText>
+      <View style={styles.levelsContainer}>
         <Pressable
           style={[styles.button]}
           onPress={() => onLevelSelect(LEVELS.BEGINNER)}
@@ -39,12 +40,20 @@ const styles = StyleSheet.create({
   modalText: {
     alignItems: 'center',
     fontSize: sizes.title,
-    marginBottom: 10
+    marginBottom: 15
+  },
+  levelsContainer: {
+    paddingTop: 10,
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-around'
   },
   scores: {
     fontSize: sizes.body
   },
   button: {
+    width: 80,
+    alignItems: 'center',
     backgroundColor: colors.primary,
     paddingHorizontal: 10,
     paddingVertical: 5,
