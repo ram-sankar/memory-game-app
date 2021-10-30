@@ -1,8 +1,7 @@
 # Memory Game
-It is a card game built using React Native in which user can select the level(easy, medium and hard) in which all of the cards are laid 
-face down on a surface and two cards are flipped face up over each turn. The object of the game is to turn over pairs of matching cards.
+It is a card game built using React Native in which user can select the difficulty(easy, medium and hard) where all the cards are laid face down on a surface and two cards are flipped face up over each turn. The object of the game is to turn over pairs of matching cards.
 
-Each flip pairs are counted and using which best score will be calculated.If the user press reset button then he can play the game from the beginning.No of pairs found is also calculated and displayed in screen.
+Each flip pair is counted and using which best score will be calculated. If the user presses the reset button then he can play the game from the beginning. Number of pairs found is also calculated and displayed on screen.
 
 ## APK File Link
 https://expo.dev/artifacts/c8943568-785d-4d93-9676-e181a2cecdbc
