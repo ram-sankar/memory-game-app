@@ -1,21 +1,24 @@
-import React from "react";
+import React, {useContext} from "react";
 import Constants from "expo-constants";
 import { StyleSheet, SafeAreaView, View } from "react-native";
 
-import { colors, sizes } from "../constants/theme";
+import { sizes } from "../constants/theme";
+import ThemeContext from "../common/ThemeContext";
+import { KeyValuePairs } from "../constants/modal";
 
 function AppScreen({ children, style }: Props) {
+  const { theme } = useContext(ThemeContext);
   return (
-    <SafeAreaView style={[styles.screen, style]}>
-      <View style={[styles.view, style]}>{children}</View>
+    <SafeAreaView style={[styles(theme).screen, style]}>
+      <View style={[styles(theme).view, style]}>{children}</View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (theme: KeyValuePairs) => StyleSheet.create({
   screen: {
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: colors.appBackGround,
+    backgroundColor: theme.appBackGround,
     flex: 1,
   },
   view: {

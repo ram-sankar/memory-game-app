@@ -1,18 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Text, StyleSheet, Platform } from "react-native";
-import { colors, sizes } from "../constants/theme";
+import ThemeContext from "../common/ThemeContext";
+import { KeyValuePairs } from "../constants/modal";
+import { sizes } from "../constants/theme";
 
 function AppText({ children, style, ...otherProps }: Props): JSX.Element {
+  const { theme } = useContext(ThemeContext);
+  
   return (
-    <Text style={[styles.testStyle, style]} {...otherProps}>
+    <Text style={[styles(theme).testStyle, style]} {...otherProps}>
       {children}
     </Text>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (theme: KeyValuePairs) => StyleSheet.create({
   testStyle: {
-    color: colors.gray4,
+    color: theme.gray4,
     fontSize: sizes.body,
     fontFamily: Platform.OS === "android" ? "Roboto" : "Avenir",
   }

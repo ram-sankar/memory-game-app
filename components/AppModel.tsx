@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Modal, StyleSheet } from "react-native";
+import ThemeContext from "../common/ThemeContext";
+import { KeyValuePairs } from "../constants/modal";
 
 function AppModal({ isModalVisible, children, height, width, ...rest }: Props) {
+  const { theme } = useContext(ThemeContext);
   
   return (
     <Modal
       visible={isModalVisible}
       {...rest}
     >
-      <View style={styles.centeredView}>
-        <View style={[styles.modalView, {height: height, width: width}]}>
+      <View style={styles(theme).centeredView}>
+        <View style={[styles(theme).modalView, {height: height, width: width}]}>
           {children}
         </View>
       </View>
@@ -17,20 +20,21 @@ function AppModal({ isModalVisible, children, height, width, ...rest }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (theme: KeyValuePairs) => StyleSheet.create({
   centeredView: {
+    backgroundColor: theme.appBackGround,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   modalView: {
+    backgroundColor: theme.gray1,
     alignItems: "center",
     justifyContent: "center",
     margin: 20,
     padding: 20,
-    backgroundColor: "white",
     elevation: 5
-  },
+  }
 });
 
 interface Props {

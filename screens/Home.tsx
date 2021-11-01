@@ -1,6 +1,7 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import React, { useEffect, useLayoutEffect, useState, useContext } from "react";
+import { View, StyleSheet, FlatList, TouchableOpacity, Switch } from "react-native";
 import { shuffleArray } from "../common/functions";
+import ThemeContext from "../common/ThemeContext";
 
 import AppScreen from "../components/AppScreen";
 import AppText from "../components/AppText";
@@ -12,7 +13,9 @@ import Completed from "./Completed";
 import StartGame from "./StartGame";
 
 function Home() {
+  const { theme, setTheme } = useContext(ThemeContext);
   const [isLevelSelectionModelOpen, setIsLevelSelectionModelOpen] = useState<boolean>(true);
+  const [isDarkModeEnabled, setIsDarkModeEnabled] = useState<boolean>(theme === colors?.dark);
   const [cardValues, setCardValues] = useState<CardValues[]>([]);
   const [isExecutionPaused, setIsExecutionPaused] = useState<boolean>(false);
   const [letterCount, setLetterCount] = useState<number>(2);
@@ -54,7 +57,7 @@ function Home() {
 
   useLayoutEffect(() => {
     setBestScore(0);
-    setIsLevelSelectionModelOpen(true);
+    // setIsLevelSelectionModelOpen(true);
   }, []);
 
   const checkIfAllMatchesAreFound = () => {
@@ -97,23 +100,23 @@ function Home() {
 
   const setCardStyle = (item: CardValues) => {
     if (item.isFound) {
-      return [styles.card, styles.completedCards];
+      return [styles(theme).card, styles(theme).completedCards];
     } else if (item.isVisible) {
-      return [styles.card, styles.openCard];
+      return [styles(theme).card, styles(theme).openCard];
     } else {
-      return [styles.card];
+      return [styles(theme).card];
     }
   }
 
   const ScoreCard = () => (
-    <View style={styles.scoreCard}>
-      <AppText style={styles.scoreCardText}>
+    <View style={styles(theme).scoreCard}>
+      <AppText style={styles(theme).scoreCardText}>
         Best: {bestScore}
       </AppText>
-      <AppText style={styles.scoreCardText}>
+      <AppText style={styles(theme).scoreCardText}>
         Pairs Found: {pairCount}
       </AppText>
-      <AppText style={styles.scoreCardText}>
+      <AppText style={styles(theme).scoreCardText}>
         Turns: {noOfTurns}
       </AppText>
     </View>
@@ -125,15 +128,36 @@ function Home() {
       style={setCardStyle(item)}
     >
       {item.isVisible && (
-        <AppText style={styles.cardText}>
+        <AppText style={styles(theme).cardText}>
           {item.value}
         </AppText>
       )}
     </TouchableOpacity>
   );
 
+  const changeTheme = () => {
+    if (setTheme) {
+      setIsDarkModeEnabled(!isDarkModeEnabled)
+      setTheme(theme === colors?.dark ? colors?.light : colors?.dark)
+    }
+  }
+
+  const RenderRadioButton = () => (
+    <View style={styles(theme).radioButtonContainer}>
+      <AppText style={styles(theme).radioButtonTitle}>Dark Mode</AppText>
+      <Switch
+        value={isDarkModeEnabled} 
+        thumbColor={theme.white}
+        trackColor={{
+          true: theme.primary
+        }}
+        onValueChange={changeTheme}
+      />
+    </View>
+  )
+
   return (
-    <AppScreen style={styles.container}>
+    <AppScreen style={styles(theme).container}>
       {isLevelSelectionModelOpen && <StartGame onLevelSelect={onLevelSelect} />}
       {isAllMatchFound && <Completed resetData={resetData} noOfTurns={noOfTurns} bestScore={bestScore} />}
       <ScoreCard />
@@ -144,14 +168,17 @@ function Home() {
         showsVerticalScrollIndicator={false}
         numColumns={4}
       />
-      <TouchableOpacity onPress={()=>setIsLevelSelectionModelOpen(true)} style={styles.resetButton}>
-        <AppText style={styles.resetText}>Reset</AppText>
-      </TouchableOpacity>
+      <View style={styles(theme).bottomContainer}>
+        <RenderRadioButton />
+        <TouchableOpacity onPress={()=>setIsLevelSelectionModelOpen(true)} style={styles(theme).resetButton}>
+          <AppText style={styles(theme).resetText}>Reset</AppText>
+        </TouchableOpacity>
+      </View>
     </AppScreen>
   )
 }
 
-const styles = StyleSheet.create({
+const styles = (theme?: {[key: string]: string}) => StyleSheet.create({
   container: {
     alignItems: 'center',
   },
@@ -166,8 +193,8 @@ const styles = StyleSheet.create({
     fontSize: sizes.title
   },
   card: {
-    backgroundColor: colors.primary,
-    borderColor: colors.gray,
+    backgroundColor: theme?.primary,
+    borderColor: theme?.gray,
     margin: 10,
     width: '20%',
     height: 100,
@@ -176,25 +203,36 @@ const styles = StyleSheet.create({
     borderRadius: sizes.radius
   },
   cardText: {
-    color: colors.white,
+    color: theme?.white,
     fontWeight: '700',
     fontSize: sizes.h1
   },
   completedCards: {
-    backgroundColor: colors.disabledPrimary
+    backgroundColor: theme?.disabledPrimary
   },
   openCard: {
-    backgroundColor: colors.purple
+    backgroundColor: theme?.purple
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-evenly'
   },
   resetButton: {
-    backgroundColor: colors.red,
+    backgroundColor: theme?.red,
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginTop: 10,
     borderRadius: sizes.radius
   },
   resetText: {
-    color: colors.white
+    color: theme?.white
+  },
+  radioButtonContainer: {
+    flexDirection: 'row'
+  },
+  radioButtonTitle: {
+    marginTop: 15
   }
 });
 export default Home;
